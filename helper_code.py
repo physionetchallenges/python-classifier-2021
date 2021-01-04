@@ -85,10 +85,10 @@ def get_sex(header):
 # Get frequency from header.
 def get_frequency(header):
     frequency = None
-    for i, l in header.split('\n'):
+    for i, l in enumerate(header.split('\n')):
         if i==0:
             try:
-                frequency = float(l.split(': ')[2])
+                frequency = float(l.split(' ')[2])
             except:
                 pass
         else:
