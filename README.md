@@ -63,7 +63,7 @@ You can test the Python example code in Linux and can test the non-Python exampl
 
 First, create a folder, docker_test, in your home directory. 
 Then, put the example code from GitHub in docker_test/python-classifier-2021, some of the training data in docker_test/input_directory and docker_test/input_training_directory,
-an empty folders for the output of the training code in docker_test/output_training_directory, and empty folder for the classifications in docker_test/output_directory.
+an empty folder for the output of the training code in docker_test/output_training_directory, and an empty folder for the classifications in docker_test/output_directory.
 Finally, build a Docker image and run the example code using the following steps:
 
     Docker
