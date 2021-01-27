@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
+# Do *not* edit this script.
 # These are helper variables and functions that you can use with your code.
-# Do not edit this script.
 
 import numpy as np, os
 from scipy.io import loadmat
@@ -9,6 +9,7 @@ from scipy.io import loadmat
 # Define 12, 6, and 2 lead ECG sets.
 twelve_leads = ('I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6')
 six_leads = ('I', 'II', 'III', 'aVR', 'aVL', 'aVF')
+three_leads = ('I', 'II', 'V2')
 two_leads = ('II', 'V5')
 
 # Check if a variable is an integer or represents an integer.
@@ -83,6 +84,19 @@ def get_sex(header):
     return sex
 
 # Get frequency from header.
+def get_num_leads(header):
+    num_leads = None
+    for i, l in enumerate(header.split('\n')):
+        if i==0:
+            try:
+                num_samples = float(l.split(' ')[1])
+            except:
+                pass
+        else:
+            break
+    return num_leads
+
+# Get frequency from header.
 def get_frequency(header):
     frequency = None
     for i, l in enumerate(header.split('\n')):
@@ -95,9 +109,22 @@ def get_frequency(header):
             break
     return frequency
 
-# Get amplitudes from header.
-def get_amplitudes(header, leads):
-    amplitudes = np.zeros(len(leads), dtype=np.float32)
+# Get number of samples from header.
+def get_num_samples(header):
+    num_samples = None
+    for i, l in enumerate(header.split('\n')):
+        if i==0:
+            try:
+                num_samples = float(l.split(' ')[3])
+            except:
+                pass
+        else:
+            break
+    return num_samples
+
+# Get gains from header.
+def get_gains(header, leads):
+    gains = np.zeros(len(leads), dtype=np.float32)
     for i, l in enumerate(header.split('\n')):
         entries = l.split(' ')
         if i==0:
@@ -107,12 +134,12 @@ def get_amplitudes(header, leads):
             if current_lead in leads:
                 j = leads.index(current_lead)
                 try:
-                    amplitudes[j] = float(entries[2].split('/')[0])
+                    gains[j] = float(entries[2].split('/')[0])
                 except:
                     pass
         else:
             break
-    return amplitudes
+    return gains
 
 # Get baselines from header.
 def get_baselines(header, leads):

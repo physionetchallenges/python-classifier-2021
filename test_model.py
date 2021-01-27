@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-# Do not edit this script.
+# Do *not* edit this script.
 
 import numpy as np, os, sys
-from team_code import load_twelve_lead_model, load_six_lead_model, load_two_lead_model
-from team_code import run_twelve_lead_model, run_six_lead_model, run_two_lead_model
+from team_code import load_twelve_lead_model, load_six_lead_model, load_three_lead_model, load_two_lead_model
+from team_code import run_twelve_lead_model, run_six_lead_model, run_three_lead_model, run_two_lead_model
 from helper_code import *
 
 # Test model.
@@ -14,6 +14,7 @@ def test_model(model_directory, data_directory, output_directory):
 
     twelve_lead_model = load_twelve_lead_model(model_directory)
     six_lead_model = load_six_lead_model(model_directory)
+    three_lead_model = load_three_lead_model(model_directory)
     two_lead_model = load_two_lead_model(model_directory)
 
     # Find header and recording files.
@@ -42,6 +43,8 @@ def test_model(model_directory, data_directory, output_directory):
             classes, labels, probabilities = run_twelve_lead_model(twelve_lead_model, header, recording)
         elif all(lead in leads for lead in six_leads):
             classes, labels, probabilities = run_six_lead_model(six_lead_model, header, recording)
+        elif all(lead in leads for lead in three_leads):
+            classes, labels, probabilities = run_three_lead_model(three_lead_model, header, recording)
         elif all(lead in leads for lead in two_leads):
             classes, labels, probabilities = run_two_lead_model(two_lead_model, header, recording)
         else:

@@ -2,108 +2,120 @@
 
 ## What's in this repository?
 
-We implemented a random forest classifier that uses age, sex, and the root mean square of the ECG lead signals as features. This simple example illustrates how to format your Python entry for the Challenge, and it should finish running on a sample Challenge training dataset in a minute or two on a modern personal computer. However, it is **not** designed to score well (or, more accurately, designed not to do well), so you should not use it as a baseline for your model's performance.
+We implemented a random forest classifier that uses age, sex, and the root mean square of the ECG lead signals as features. This simple example illustrates how to format your Python entry for the Challenge, and it should finish running on any of the Challenge training datasets in a minute or two on a personal computer. However, it is **not** designed to score well (or, more accurately, it is designed not to score well), so you should not use it as a baseline for your model's performance.
 
-This code uses four main scripts, as described below, to train and test your model for the 2021 Challenge. 
+This code uses four main scripts, as described below, to train and test your model for the 2021 Challenge.
 
 ## How do I run these scripts?
 
-You can run this classifier code by installing the requirements and running
+You can run this classifier code by installing the requirements
+
+    pip install requirements.txt
+
+and running
 
     python train_model.py training_data model
     python test_model.py model test_data test_outputs
 
-where `training_data` is a directory of training data files, `model` is a directory for saving your model, `test_data` is the directory of test data files (you can use the training data locally for debugging and cross-validation), and `test_outputs` is a directory for saving your model's outputs. The [PhysioNet/CinC Challenge 2021 webpage](https://physionetchallenges.org/2021/) provides a training database with data files and a description of the contents and structure of these files.
+where `training_data` is a folder of training data files, `model` is a folder for saving your models, `test_data` is a folder of test data files (you can use the training data locally for debugging and cross-validation), and `test_outputs` is a folder for saving your models' outputs. The [PhysioNet/CinC Challenge 2021 webpage](https://physionetchallenges.org/2021/) provides training databases with data files and a description of the contents and structure of these files.
 
-After training your model and obtaining test outputs using the above two command lines, you can evaluate the scores of your model using the [PhysioNet/CinC Challenge 2021 evaluation code](https://github.com/physionetchallenges/evaluation-2021) by running
+After training your model and obtaining test outputs with above commands, you can evaluate the scores of your models using the [PhysioNet/CinC Challenge 2021 evaluation code](https://github.com/physionetchallenges/evaluation-2021) by running
 
     python evaluate_model.py labels outputs scores.csv class_scores.csv
 
-where `labels` is a directory containing files with one or more labels for each ECG recording, such as the training database on the PhysioNet webpage; `outputs` is a directory containing files with outputs produced by your algorithm for those recordings; `scores.csv` (optional) is a collection of scores for your algorithm; and `class_scores.csv` (optional) is a collection of per-class scores for your algorithm.
+where `labels` is a folder containing files with one or more labels for each ECG recording, such as the training database on the PhysioNet webpage; `outputs` is a folder containing files with outputs produced by your models for those recordings; `scores.csv` (optional) is a collection of scores for your models; and `class_scores.csv` (optional) is a collection of per-class scores for your models.
 
 ## Which scripts I can edit?
 
-We will run the `train_model.py` and `test_model.py` scripts to run your training code and testing code, so check these scripts and the functions that they call.
-Our example code uses four main scripts to train and test your model for the 2021 Challenge: 
+We will run the `train_model.py` and `test_model.py` scripts to run your training code and testing code, so please check these scripts and the functions that they call.
+Our example code uses four main scripts to train and test your model for the 2021 Challenge:
 
 Please edit the following script to add your training and testing code:
-* `team_code.py` is a script with functions for training your model and running your trained model.
+
+* `team_code.py` is a script with functions for training your model and running your trained models.
 
 Please do **not** edit the following scripts. We will use the unedited versions of these scripts.
+
 * `train_model.py` is a script for calling your training code on the training data.
-* `test_model.py` is a script for calling your trained model on the test data.
+* `test_model.py` is a script for calling your trained models on the test data.
 * `helper_code.py` is a script with helper variables and functions that we used for our code. You are welcome to use them in your code.
 
-These four scripts must remain in the root path of your repository, but you can put other scripts and other files in subfolders.
+These four scripts must remain in the root path of your repository, but you can put other scripts and other files elsewhere in your repository.
 
 ## How do I train, save, load, and run my model?
 
-To train and save your model, please edit the `training_code` function in the `team_code.py` script. Please do not edit the input arguments or output arguments of the `training_code` function.
+To train and save your models, please edit the `training_code` function in the `team_code.py` script. Please do not edit the input arguments or output arguments of the `training_code` function.
 
-To load and run your trained model, please edit the `load_twelve_ecg_model`, `load_six_ecg_model`, and `load_two_ecg_model` as well as the `run_twelve_ecg_model`, `run_six_ecg_model`, and `run_two_ecg_model` functions in the `team_code.py` script, which takes an ECG recording as an input and returns the class labels and probabilities for the ECG recording as outputs. Please do not edit the input or output arguments of the functions for loading or running your models.
+To load and run your trained model, please edit the `load_twelve_lead_model`, `load_six_lead_model`, `load_three_lead_model`, and `load_two_lead_model` functions as well as the `run_twelve_lead_model`, `run_six_lead_model`, `run_three_lead_model` and `run_two_lead_model` functions in the `team_code.py` script, which takes an ECG recording as an input and returns the class labels and probabilities for the ECG recording as outputs. Please do not edit the input or output arguments of the functions for loading or running your models.
 
 ## What else is in this repository?
 
-This README has instructions for running the example code and writing and testing your own code.
+This README has instructions for running the example code and writing and running your own code.
 
-We also included a script, `extract_leads_wfdb.py`, for extracting reduced-lead sets from the training data. You can use this script to produce reduce leads data and use them to test your code. You can run this script with the following commands:
+We also included a script, `extract_leads_wfdb.py`, for extracting reduced-lead sets from the training data. You can use this script to produce reduced-lead data that you can use with your code. You can run this script using the following commands:
 
-    python extract_leads_wfdb.py -i twelve_lead_directory -l II V5 -o two_lead_directory
-    python extract_leads_wfdb.py -i twelve_lead_directory -l I II III aVL aVR aVF -o six_lead_directory 
+    python extract_leads_wfdb.py -i twelve_lead_directory -o two_lead_directory -l II V5 
+    python extract_leads_wfdb.py -i twelve_lead_directory -o six_lead_directory -l I II III aVL aVR aVF 
+
+Here, the `-i` argument gives the input folder, the `-o` argument gives the output folder, and the `-l` argument gives the leads.
 
 ## How do I run these scripts in Docker?
 
-Using docker allows to containerize and package codes with different dependencies run identically in any environment and operating system.
-To install docker, go to [Get Docker](https://docs.docker.com/install/) and install the Docker Community Edition. For troubleshooting, see [Configure and troubleshoot the Docker](https://docs.docker.com/config/daemon/).
+Docker and similar platforms allow you to containerize and package your code with specific dependencies that you can run reliably in other computing environments and operating systems.
 
-After installing Docker, clone your repository, build an image using your code and run it on a single recording.
+To guarantee that we can run your code, please [install](https://docs.docker.com/get-docker/) Docker, build a Docker image from your code, and run in on the training data. To quickly check your code for bugs, you may want to run it on a subset of the training data.
 
-If you have trouble testing your code, then make sure that you can test the example code, which is known to work. 
-You can test the Python example code in Linux and can test the non-Python example code on a Mac or other operating systems in a similar way.
+If you have trouble running your code, then please try the follow steps to run the example code, which is known to work.
 
-First, create a folder, docker_test, in your home directory. 
-Then, put the example code from GitHub in docker_test/python-classifier-2021, some of the training data in docker_test/input_directory and docker_test/input_training_directory,
-an empty folders for the output of the training code in docker_test/output_training_directory, and empty folder for the classifications in docker_test/output_directory.
-Finally, build a Docker image and run the example code using the following steps:
+1. Create a folder `example` for this example with several subfolders:
 
-    Docker
-    user@computer:~/docker_test$ ls
-    input_directory  output_directory  python-classifier-2021
+    user@computer:~$ mkdir example
+    user@computer:~$ cd example
+    user@computer:~/example$ mkdir training_data
+    user@computer:~/example$ mkdir test_data
+    user@computer:~/example$ mkdir model
+    user@computer:~/example$ mkdir test_outputs
 
-    user@computer:~/docker_test$ ls input_directory/
-    A0001.hea  A0001.mat  A0002.hea  A0002.mat  A0003.hea ...
+2. Put the example code from this repository in `python-classifier-2021`, some of the training data in `training_data`, and some of the test data in `test_data`. You can use held-out training data to check your code.
 
-    user@computer:~/docker_test$ cd python-classifier-2021/
+3. Build a Docker image and run the example code:
 
-    user@computer:~/docker_test/python-classifier-2021$ docker build -t image .
+    user@computer:~/example$ ls
+    model  python-classifier-2021  test_data  test_outputs  training_data
+
+    user@computer:~/example$ ls training_data/
+    A0001.hea  A0001.mat  A0002.hea  A0002.mat  A0003.hea  ...
+
+    user@computer:~/example$ cd python-classifier-2021/
+
+    user@computer:~/example/python-classifier-2021$ docker build -t image .
 
     Sending build context to Docker daemon  30.21kB
     [...]
     Successfully tagged image:latest
 
-    user@computer:~/docker_test/python-classifier-2021$ docker run -it -v 
-    ~/docker_test/input_training_directory:/physionet/input_training_directory -v 
-    ~/docker_test/output_training_directory:/physionet/output_training_directory -v 
-    ~/docker_test/input_directory:/physionet/input_directory -v ~/docker_test/output_directory:/physionet/output_directory image bash
+    user@computer:~/example/python-classifier-2021$ docker run -it -v \
+        ../model:/physionet/model -v \
+        ../test_data:/physionet/test_data -v \
+        ../test_outputs:/physionet/test_outputs -v \
+        ../training_data:/physionet/training_data -v \
+        image bash
 
     root@[...]:/physionet# ls
-    AUTHORS.txt  Dockerfile LICENSE.txt  README.md extract_leads_wfdb.py  helper_code.py  input_directory  output_directory  requirements.txt team_code.py test_model.py    train_model.py
+        Dockerfile             helper_code.py  model      requirements.txt  test_data      test_outputs   train_model.py
+        extract_leads_wfdb.py  LICENSE         README.md  team_code.py      test_model.py  training_data
 
-    root@[...]:/physionet# python train_model.py input_training_directory/ output_training_directory/
+    root@[...]:/physionet# python train_model.py training_data/ model/
 
-    root@[...]:/physionet# python test_model.py output_training_directory/ input_directory/ output_directory/
+    root@[...]:/physionet# python test_model.py model/ test_data/ test_outputs/
 
     root@[...]:/physionet# exit
     Exit
 
-    user@computer:~/docker_test$ cd ..
+    user@computer:~/example$ cd ..
 
-    user@computer:~/docker_test$ ls output_directory/
-    A0001.csv  A0002.csv  A0003.csv  A0004.csv  A0005.csv
-    
-
-Here are two links with good, data science-centric introductions to Docker: [How Docker Can Help You Become A More Effective Data Scientist](https://towardsdatascience.com/how-docker-can-help-you-become-a-more-effective-data-scientist-7fc048ef91d5), and [Learn Enough Docker to be Useful](https://link.medium.com/G87RxYuQIV).
-For more information on using the Docker for the Challenge, please visit the [Frequently Asked Questions (FAQ)](https://physionetchallenges.org/2020/submissions).
+    user@computer:~/example$ ls test_outputs/
+    A0006.csv  A0007.csv  A0008.csv  A0009.csv  A0010.csv  ...
 
 ## How do I learn more?
 
@@ -111,10 +123,7 @@ Please see the [PhysioNet/CinC Challenge 2021 webpage](https://physionetchalleng
 
 ## Useful links
 
-- [The PhysioNet/CinC Challenge 2021 webpage](https://physionetchallenges.org/2021/)
-
-- [MATLAB example code for the PhysioNet/CinC Challenge 2021](https://github.com/physionetchallenges/matlab-classifier-2021)
-
-- [Evaluation code for the PhysioNet/CinC Challenge 2021](https://github.com/physionetchallenges/evaluation-2021)
-
-- [Frequently Asked Questions (FAQ)](https://physionetchallenges.org/faq/)
+* [The PhysioNet/CinC Challenge 2021 webpage](https://physionetchallenges.org/2021/)
+* [MATLAB example code for the PhysioNet/CinC Challenge 2021](https://github.com/physionetchallenges/matlab-classifier-2021)
+* [Evaluation code for the PhysioNet/CinC Challenge 2021](https://github.com/physionetchallenges/evaluation-2021)
+* [Frequently Asked Questions (FAQ)](https://physionetchallenges.org/faq/)

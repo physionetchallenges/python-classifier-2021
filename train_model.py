@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Do not edit this script.
+# Do *not* edit this script.
 
 import sys
 from team_code import training_code

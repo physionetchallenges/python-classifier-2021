@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 
 # Edit this script to add your team's training code.
+# Some functions are *required*, but you can edit most parts of required functions, remove non-required functions, and add your own function.
 
 from helper_code import *
 import numpy as np, os, sys, joblib
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
+
+twelve_lead_model_filename = '12_lead_model.sav'
+six_lead_model_filename = '6_lead_model.sav'
+three_lead_model_filename = '3_lead_model.sav'
+two_lead_model_filename = '2_lead_model.sav'
 
 ################################################################################
 #
@@ -13,7 +19,7 @@ from sklearn.ensemble import RandomForestClassifier
 #
 ################################################################################
 
-# Train your model. This function is **required**. Do **not** change the arguments of this function.
+# Train your model. This function is *required*. Do *not* change the arguments of this function.
 def training_code(data_directory, model_directory):
     # Find header and recording files.
     print('Finding header and recording files...')
@@ -33,9 +39,9 @@ def training_code(data_directory, model_directory):
         header = load_header(header_file)
         classes |= set(get_labels(header))
     if all(is_integer(x) for x in classes):
-        classes = sorted(classes, key=lambda x: int(x))
+        classes = sorted(classes, key=lambda x: int(x)) # Sort classes numerically if numbers.
     else:
-        classes = sorted(classes)
+        classes = sorted(classes) # Sort classes alphanumerically otherwise.
     num_classes = len(classes)
 
     # Extract features and labels from dataset.
@@ -67,7 +73,7 @@ def training_code(data_directory, model_directory):
     print('Training 12-lead ECG model...')
 
     leads = twelve_leads
-    filename = os.path.join(model_directory, 'twelve_lead_ecg_model.sav')
+    filename = os.path.join(model_directory, twelve_lead_model_filename)
 
     feature_indices = [twelve_leads.index(lead) for lead in leads] + [12, 13]
     features = data[:, feature_indices]
@@ -81,7 +87,21 @@ def training_code(data_directory, model_directory):
     print('Training 6-lead ECG model...')
 
     leads = six_leads
-    filename = os.path.join(model_directory, 'six_lead_ecg_model.sav')
+    filename = os.path.join(model_directory, six_lead_model_filename)
+
+    feature_indices = [twelve_leads.index(lead) for lead in leads] + [12, 13]
+    features = data[:, feature_indices]
+
+    imputer = SimpleImputer().fit(features)
+    features = imputer.transform(features)
+    classifier = RandomForestClassifier(random_state=0).fit(features, labels)
+    save_model(filename, classes, leads, imputer, classifier)
+
+    # Train 3-lead ECG model.
+    print('Training 3-lead ECG model...')
+
+    leads = three_leads
+    filename = os.path.join(model_directory, three_lead_model_filename)
 
     feature_indices = [twelve_leads.index(lead) for lead in leads] + [12, 13]
     features = data[:, feature_indices]
@@ -95,7 +115,7 @@ def training_code(data_directory, model_directory):
     print('Training 2-lead ECG model...')
 
     leads = two_leads
-    filename = os.path.join(model_directory, 'two_lead_ecg_model.sav')
+    filename = os.path.join(model_directory, two_lead_model_filename)
 
     feature_indices = [twelve_leads.index(lead) for lead in leads] + [12, 13]
     features = data[:, feature_indices]
@@ -117,19 +137,24 @@ def save_model(filename, classes, leads, imputer, classifier):
     d = {'classes': classes, 'leads': leads, 'imputer': imputer, 'classifier': classifier}
     joblib.dump(d, filename, protocol=0)
 
-# Load your trained 12-lead ECG model. This function is **required**. Do **not** change the arguments of this function.
+# Load your trained 12-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
 def load_twelve_lead_model(model_directory):
-    filename = os.path.join(model_directory, 'twelve_lead_ecg_model.sav')
+    filename = os.path.join(model_directory, twelve_lead_model_filename)
     return load_model(filename)
 
-# Load your trained 6-lead ECG model. This function is **required**. Do **not** change the arguments of this function.
+# Load your trained 6-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
 def load_six_lead_model(model_directory):
-    filename = os.path.join(model_directory, 'six_lead_ecg_model.sav')
+    filename = os.path.join(model_directory, six_lead_model_filename)
     return load_model(filename)
 
-# Load your trained 2-lead ECG model. This function is **required**. Do **not** change the arguments of this function.
+# Load your trained 3-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
+def load_three_lead_model(model_directory):
+    filename = os.path.join(model_directory, three_lead_model_filename)
+    return load_model(filename)
+
+# Load your trained 2-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
 def load_two_lead_model(model_directory):
-    filename = os.path.join(model_directory, 'two_lead_ecg_model.sav')
+    filename = os.path.join(model_directory, two_lead_model_filename)
     return load_model(filename)
 
 # Generic function for loading a model.
@@ -142,15 +167,19 @@ def load_model(filename):
 #
 ################################################################################
 
-# Run your trained 12-lead ECG model. This function is **required**. Do **not** change the arguments of this function.
+# Run your trained 12-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
 def run_twelve_lead_model(model, header, recording):
     return run_model(model, header, recording)
 
-# Run your trained 6-lead ECG model. This function is **required**. Do **not** change the arguments of this function.
+# Run your trained 6-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
 def run_six_lead_model(model, header, recording):
     return run_model(model, header, recording)
 
-# Run your trained 2-lead ECG model. This function is **required**. Do **not** change the arguments of this function.
+# Run your trained 3-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
+def run_three_lead_model(model, header, recording):
+    return run_model(model, header, recording)
+
+# Run your trained 2-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
 def run_two_lead_model(model, header, recording):
     return run_model(model, header, recording)
 
@@ -213,11 +242,11 @@ def get_features(header, recording, leads):
     recording = recording[indices, :]
 
     # Pre-process recordings.
-    amplitudes = get_amplitudes(header, leads)
+    gains = get_gains(header, leads)
     baselines = get_baselines(header, leads)
     num_leads = len(leads)
     for i in range(num_leads):
-        recording[i, :] = amplitudes[i] * recording[i, :] - baselines[i]
+        recording[i, :] = gains[i] * recording[i, :] - baselines[i]
 
     # Compute the root mean square of each ECG lead signal.
     rms = np.zeros(num_leads, dtype=np.float32)
