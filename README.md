@@ -67,55 +67,57 @@ To guarantee that we can run your code, please [install](https://docs.docker.com
 
 If you have trouble running your code, then please try the follow steps to run the example code, which is known to work.
 
-1. Create a folder `example` for this example with several subfolders:
+1. Create a folder `example` in your home directory with several subfolders.
 
-    user@computer:~$ mkdir example
-    user@computer:~$ cd example
-    user@computer:~/example$ mkdir training_data
-    user@computer:~/example$ mkdir test_data
-    user@computer:~/example$ mkdir model
-    user@computer:~/example$ mkdir test_outputs
+        user@computer:~$ cd ~/
+        user@computer:~$ mkdir example
+        user@computer:~$ cd example
+        user@computer:~/example$ mkdir training_data test_data model test_outputs
 
 2. Put the example code from this repository in `python-classifier-2021`, some of the training data in `training_data`, and some of the test data in `test_data`. You can use held-out training data to check your code.
 
-3. Build a Docker image and run the example code:
+        user@computer:~/example$ git clone https://github.com/physionetchallenges/python-classifier-2021.git
 
-    user@computer:~/example$ ls
-    model  python-classifier-2021  test_data  test_outputs  training_data
+3. Build a Docker image and run the example code.
 
-    user@computer:~/example$ ls training_data/
-    A0001.hea  A0001.mat  A0002.hea  A0002.mat  A0003.hea  ...
+        user@computer:~/example$ ls
+        model  python-classifier-2021  test_data  test_outputs  training_data
 
-    user@computer:~/example$ cd python-classifier-2021/
+        user@computer:~/example$ ls training_data/
+        A0001.hea  A0001.mat  A0002.hea  A0002.mat  A0003.hea  ...
 
-    user@computer:~/example/python-classifier-2021$ docker build -t image .
+        user@computer:~/example$ cd python-classifier-2021/
 
-    Sending build context to Docker daemon  30.21kB
-    [...]
-    Successfully tagged image:latest
+        user@computer:~/example/python-classifier-2021$ docker build -t image .
 
-    user@computer:~/example/python-classifier-2021$ docker run -it -v \
-        ../model:/physionet/model -v \
-        ../test_data:/physionet/test_data -v \
-        ../test_outputs:/physionet/test_outputs -v \
-        ../training_data:/physionet/training_data -v \
-        image bash
+        Sending build context to Docker daemon  30.21kB
+        [...]
+        Successfully tagged image:latest
 
-    root@[...]:/physionet# ls
-        Dockerfile             helper_code.py  model      requirements.txt  test_data      test_outputs   train_model.py
-        extract_leads_wfdb.py  LICENSE         README.md  team_code.py      test_model.py  training_data
+        user@computer:~/example/python-classifier-2021$ docker run -it -v \
+            ~/example/model:/physionet/model -v \ 
+            ~/example/test_data:/physionet/test_data -v \ 
+            ~/example/test_outputs:/physionet/test_outputs -v \ 
+            ~/example/training_data:/physionet/training_data -v \ 
+            image bash
 
-    root@[...]:/physionet# python train_model.py training_data/ model/
+        root@[...]:/physionet# ls
+            Dockerfile             model             test_data      train_model.py
+            extract_leads_wfdb.py  README.md         test_model.py
+            helper_code.py         requirements.txt  test_outputs
+            LICENSE                team_code.py      training_data
 
-    root@[...]:/physionet# python test_model.py model/ test_data/ test_outputs/
+        root@[...]:/physionet# python train_model.py training_data/ model/
 
-    root@[...]:/physionet# exit
-    Exit
+        root@[...]:/physionet# python test_model.py model/ test_data/ test_outputs/
 
-    user@computer:~/example$ cd ..
+        root@[...]:/physionet# exit
+        Exit
 
-    user@computer:~/example$ ls test_outputs/
-    A0006.csv  A0007.csv  A0008.csv  A0009.csv  A0010.csv  ...
+        user@computer:~/example$ cd ..
+
+        user@computer:~/example$ ls test_outputs/
+        A0006.csv  A0007.csv  A0008.csv  A0009.csv  A0010.csv  ...
 
 ## How do I learn more?
 
