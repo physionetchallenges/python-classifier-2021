@@ -94,12 +94,7 @@ If you have trouble running your code, then please try the follow steps to run t
         [...]
         Successfully tagged image:latest
 
-        user@computer:~/example/python-classifier-2021$ docker run -it -v \
-            ~/example/model:/physionet/model -v \ 
-            ~/example/test_data:/physionet/test_data -v \ 
-            ~/example/test_outputs:/physionet/test_outputs -v \ 
-            ~/example/training_data:/physionet/training_data -v \ 
-            image bash
+        user@computer:~/example/python-classifier-2021$ docker run -it -v ~/example/model:/physionet/model -v ~/example/test_data:/physionet/test_data -v ~/example/test_outputs:/physionet/test_outputs -v ~/example/training_data:/physionet/training_data image bash
 
         root@[...]:/physionet# ls
             Dockerfile             model             test_data      train_model.py
@@ -107,9 +102,9 @@ If you have trouble running your code, then please try the follow steps to run t
             helper_code.py         requirements.txt  test_outputs
             LICENSE                team_code.py      training_data
 
-        root@[...]:/physionet# python train_model.py training_data/ model/
+        root@[...]:/physionet# python train_model.py training_data model
 
-        root@[...]:/physionet# python test_model.py model/ test_data/ test_outputs/
+        root@[...]:/physionet# python test_model.py model test_data test_outputs
 
         root@[...]:/physionet# exit
         Exit
