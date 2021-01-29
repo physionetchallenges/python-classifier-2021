@@ -63,7 +63,7 @@ Here, the `-i` argument gives the input folder, the `-o` argument gives the outp
 
 Docker and similar platforms allow you to containerize and package your code with specific dependencies that you can run reliably in other computing environments and operating systems.
 
-To guarantee that we can run your code, please [install](https://docs.docker.com/get-docker/) Docker, build a Docker image from your code, and run in on the training data. To quickly check your code for bugs, you may want to run it on a subset of the training data.
+To guarantee that we can run your code, please [install](https://docs.docker.com/get-docker/) Docker, build a Docker image from your code, and run it on the training data. To quickly check your code for bugs, you may want to run it on a subset of the training data.
 
 If you have trouble running your code, then please try the follow steps to run the example code, which is known to work.
 
@@ -74,11 +74,13 @@ If you have trouble running your code, then please try the follow steps to run t
         user@computer:~$ cd example
         user@computer:~/example$ mkdir training_data test_data model test_outputs
 
-2. Put the example code from this repository in `python-classifier-2021`, some of the training data in `training_data`, and some of the test data in `test_data`. You can use held-out training data to check your code.
+2. Download the training data from the [Challenge website](https://physionetchallenges.org/2021/#data-access). Put some of the training data in `training_data` and `test_data`. You can use some of the training data to check your code (and should perform cross-validation on the training data to evaluate your algorithm).
+
+3. Download or clone this repository in your terminal.
 
         user@computer:~/example$ git clone https://github.com/physionetchallenges/python-classifier-2021.git
 
-3. Build a Docker image and run the example code.
+4. Build a Docker image and run the example code in your terminal.
 
         user@computer:~/example$ ls
         model  python-classifier-2021  test_data  test_outputs  training_data
@@ -109,7 +111,7 @@ If you have trouble running your code, then please try the follow steps to run t
         root@[...]:/physionet# exit
         Exit
 
-        user@computer:~/example$ cd ..
+        user@computer:~/example/python-classifier-2021$ cd ..
 
         user@computer:~/example$ ls test_outputs/
         A0006.csv  A0007.csv  A0008.csv  A0009.csv  A0010.csv  ...
