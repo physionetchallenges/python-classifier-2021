@@ -23,6 +23,9 @@ def test_model(model_directory, data_directory, output_directory):
     header_files, recording_files = find_challenge_files(data_directory)
     num_recordings = len(recording_files)
 
+    if not num_recordings:
+        raise Exception('No data was provided.')
+
     # Create a folder for the outputs if it does not already exist.
     if not os.path.isdir(output_directory):
         os.mkdir(output_directory)
