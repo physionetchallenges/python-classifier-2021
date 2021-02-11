@@ -245,11 +245,11 @@ def get_features(header, recording, leads):
     recording = recording[indices, :]
 
     # Pre-process recordings.
-    gains = get_gains(header, leads)
+    adc_gains = get_adcgains(header, leads)
     baselines = get_baselines(header, leads)
     num_leads = len(leads)
     for i in range(num_leads):
-        recording[i, :] = gains[i] * recording[i, :] - baselines[i]
+        recording[i, :] = recording[i, :] / adc_gains[i] - baselines[i]
 
     # Compute the root mean square of each ECG lead signal.
     rms = np.zeros(num_leads, dtype=np.float32)
