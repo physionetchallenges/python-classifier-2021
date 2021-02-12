@@ -122,7 +122,7 @@ def get_num_samples(header):
             break
     return num_samples
 
-# Get ADC gains (ADC units), floating-point number for ECG leads, from header.
+# Get ADC gains (ADC units per physical unit), floating-point number for ECG leads, from header.
 def get_adcgains(header, leads):
     adc_gains = np.zeros(len(leads), dtype=np.float32)
     for i, l in enumerate(header.split('\n')):
