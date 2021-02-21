@@ -83,7 +83,7 @@ def training_code(data_directory, model_directory):
 
     imputer = SimpleImputer().fit(features)
     features = imputer.transform(features)
-    classifier = RandomForestClassifier(random_state=0).fit(features, labels)
+    classifier = RandomForestClassifier(n_estimators=10, random_state=0).fit(features, labels)
     save_model(filename, classes, leads, imputer, classifier)
 
     # Train 6-lead ECG model.
@@ -97,7 +97,7 @@ def training_code(data_directory, model_directory):
 
     imputer = SimpleImputer().fit(features)
     features = imputer.transform(features)
-    classifier = RandomForestClassifier(random_state=0).fit(features, labels)
+    classifier = RandomForestClassifier(n_estimators=10, random_state=0).fit(features, labels)
     save_model(filename, classes, leads, imputer, classifier)
 
     # Train 3-lead ECG model.
@@ -111,7 +111,7 @@ def training_code(data_directory, model_directory):
 
     imputer = SimpleImputer().fit(features)
     features = imputer.transform(features)
-    classifier = RandomForestClassifier(random_state=0).fit(features, labels)
+    classifier = RandomForestClassifier(n_estimators=10, random_state=0).fit(features, labels)
     save_model(filename, classes, leads, imputer, classifier)
 
     # Train 2-lead ECG model.
@@ -125,7 +125,7 @@ def training_code(data_directory, model_directory):
 
     imputer = SimpleImputer().fit(features)
     features = imputer.transform(features)
-    classifier = RandomForestClassifier(random_state=0).fit(features, labels)
+    classifier = RandomForestClassifier(n_estimators=10, random_state=0).fit(features, labels)
     save_model(filename, classes, leads, imputer, classifier)
 
 ################################################################################
@@ -249,7 +249,7 @@ def get_features(header, recording, leads):
     baselines = get_baselines(header, leads)
     num_leads = len(leads)
     for i in range(num_leads):
-        recording[i, :] = (recording[i, :] - baselines[i]) / adc_gains[i] 
+        recording[i, :] = (recording[i, :] - baselines[i]) / adc_gains[i]
 
     # Compute the root mean square of each ECG lead signal.
     rms = np.zeros(num_leads, dtype=np.float32)
