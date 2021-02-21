@@ -83,7 +83,7 @@ def training_code(data_directory, model_directory):
 
     imputer = SimpleImputer().fit(features)
     features = imputer.transform(features)
-    classifier = RandomForestClassifier(n_estimators=10, random_state=0).fit(features, labels)
+    classifier = RandomForestClassifier(n_estimators=3, random_state=0).fit(features, labels)
     save_model(filename, classes, leads, imputer, classifier)
 
     # Train 6-lead ECG model.
@@ -97,7 +97,7 @@ def training_code(data_directory, model_directory):
 
     imputer = SimpleImputer().fit(features)
     features = imputer.transform(features)
-    classifier = RandomForestClassifier(n_estimators=10, random_state=0).fit(features, labels)
+    classifier = RandomForestClassifier(n_estimators=3, random_state=0).fit(features, labels)
     save_model(filename, classes, leads, imputer, classifier)
 
     # Train 3-lead ECG model.
@@ -111,7 +111,7 @@ def training_code(data_directory, model_directory):
 
     imputer = SimpleImputer().fit(features)
     features = imputer.transform(features)
-    classifier = RandomForestClassifier(n_estimators=10, random_state=0).fit(features, labels)
+    classifier = RandomForestClassifier(n_estimators=3, random_state=0).fit(features, labels)
     save_model(filename, classes, leads, imputer, classifier)
 
     # Train 2-lead ECG model.
@@ -125,7 +125,7 @@ def training_code(data_directory, model_directory):
 
     imputer = SimpleImputer().fit(features)
     features = imputer.transform(features)
-    classifier = RandomForestClassifier(n_estimators=10, random_state=0).fit(features, labels)
+    classifier = RandomForestClassifier(n_estimators=3, random_state=0).fit(features, labels)
     save_model(filename, classes, leads, imputer, classifier)
 
 ################################################################################
