@@ -46,12 +46,6 @@ def run(args):
             print('The signal file {} is malformed: the dimensions of the signal file are inconsistent with the header file {}.'.format(full_recording_file, full_header_file))
             sys.exit()
 
-        header_id = full_lines[0].split(' ')[0]
-        recording_ids = set(full_lines[i].split(' ')[0].split('.mat')[0] for i in range(1, num_full_leads+1))
-        if len(recording_ids)>1 or header_id not in recording_ids:
-            print('The recording ID {} in the header file does not match the filename(s) {} for the signal file(s).'.format(header_id, ', '.join(sorted(recording_ids))))
-            sys.exit()
-
         # Check that all of the reduced leads are available.
         unavailable_leads = [lead for lead in reduced_leads if lead not in full_leads]
         if unavailable_leads:
