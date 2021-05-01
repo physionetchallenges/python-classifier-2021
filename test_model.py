@@ -3,20 +3,11 @@
 # Do *not* edit this script.
 
 import numpy as np, os, sys
-from team_code import load_twelve_lead_model, load_six_lead_model, load_three_lead_model, load_two_lead_model
-from team_code import run_twelve_lead_model, run_six_lead_model, run_three_lead_model, run_two_lead_model
+from team_code import load_model, run_model
 from helper_code import *
 
 # Test model.
 def test_model(model_directory, data_directory, output_directory):
-    # Load model.
-    print('Loading models...')
-
-    twelve_lead_model = load_twelve_lead_model(model_directory)
-    six_lead_model = load_six_lead_model(model_directory)
-    three_lead_model = load_three_lead_model(model_directory)
-    two_lead_model = load_two_lead_model(model_directory)
-
     # Find header and recording files.
     print('Finding header and recording files...')
 
@@ -30,6 +21,20 @@ def test_model(model_directory, data_directory, output_directory):
     if not os.path.isdir(output_directory):
         os.mkdir(output_directory)
 
+    # Identify the required lead sets.
+    required_lead_sets = set()
+    for i in range(num_recordings):
+        header = load_header(header_files[i])
+        leads = get_leads(header)
+        required_lead_sets.add(sort_leads(leads))
+
+    # Load models.
+    leads_to_model = dict()
+    print('Loading models...')
+    for leads in required_lead_sets:
+        model = load_model(model_directory, leads) ### Implement this function!
+        leads_to_model[leads] = model
+
     # Run model for each recording.
     print('Running model...')
 
@@ -42,29 +47,22 @@ def test_model(model_directory, data_directory, output_directory):
         leads = get_leads(header)
 
         # Apply model to recording.
-        if all(lead in leads for lead in twelve_leads):
-            classes, labels, probabilities = run_twelve_lead_model(twelve_lead_model, header, recording)
-        elif all(lead in leads for lead in six_leads):
-            classes, labels, probabilities = run_six_lead_model(six_lead_model, header, recording)
-        elif all(lead in leads for lead in three_leads):
-            classes, labels, probabilities = run_three_lead_model(three_lead_model, header, recording)
-        elif all(lead in leads for lead in two_leads):
-            classes, labels, probabilities = run_two_lead_model(two_lead_model, header, recording)
-        else:
-            raise NotImplementedError('No model is implemented for the lead set {}.'.format(', '.join(leads)))
+        model = leads_to_model[leads]
+        classes, labels, probabilities = run_model(model, header, recording) ### Implement this function!
 
         # Save model outputs.
+        recording_id = get_recording_id(header)
         head, tail = os.path.split(header_files[i])
         root, extension = os.path.splitext(tail)
         output_file = os.path.join(output_directory, root + '.csv')
-        save_outputs(output_file, classes, labels, probabilities)
+        save_outputs(output_file, recording_id, classes, labels, probabilities)
 
     print('Done.')
 
 if __name__ == '__main__':
     # Parse arguments.
     if len(sys.argv) != 4:
-        raise Exception('Include the model, data, and output folders as arguments, e.g., python test_model.py model data output.')
+        raise Exception('Include the model, data, and output folders as arguments, e.g., python test_model.py model data outputs.')
 
     model_directory = sys.argv[1]
     data_directory = sys.argv[2]

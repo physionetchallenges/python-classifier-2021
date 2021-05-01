@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
 # Load libraries.
-from helper_code import find_challenge_files, get_leads
 import os, sys, argparse
-import numpy as np, scipy as sp
 from scipy.io import loadmat
+from helper_code import find_challenge_files, load_header, load_recording, get_leads
 
 # Parse arguments.
 def get_parser():
-    description = 'Extract reduced-lead sets from the WFDB signal and header data.'
+    description = 'Extract reduced-lead ECGs from WFDB signal and header data.'
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-i', '--input_directory', type=str, required=True)
     parser.add_argument('-k', '--key', type=str, required=False, default='val')
@@ -31,61 +30,43 @@ def run(args):
 
     # Extract a reduced-lead set from each pair of full-lead header and recording files.
     for full_header_file, full_recording_file in zip(full_header_files, full_recording_files):
-        # Load a pair of full-lead header and recording files.
-        with open(full_header_file, 'r') as f:
-            full_header = f.read()
-        x = loadmat(full_recording_file)[args.key]
-        full_recording = np.asarray(x)
-
-        full_lines = full_header.split('\n')
+        # Load the full-lead header file.
+        full_header = load_header(full_header_file)
         full_leads = get_leads(full_header)
         num_full_leads = len(full_leads)
 
-        # Check that the header and recording files match.
-        if np.shape(full_recording)[0] != num_full_leads:
-            print('The signal file {} is malformed: the dimensions of the signal file are inconsistent with the header file {}.'.format(full_recording_file, full_header_file))
-            sys.exit()
-
-        # Check that all of the reduced leads are available.
-        unavailable_leads = [lead for lead in reduced_leads if lead not in full_leads]
-        if unavailable_leads:
-            print('The lead(s) {} are not available in the header file {}.'.format(', '.join(unavailable_leads), full_header_file))
-            sys.exit()
-
-        # Create a pair of reduced-lead header and recording files.
-        head, tail = os.path.split(full_header_file)
-        reduced_header_file = os.path.join(args.output_directory, tail)
-
-        head, tail = os.path.split(full_recording_file)
-        reduced_recording_file = os.path.join(args.output_directory, tail)
-
-        # For the first line of the header file that describes the recording, update the number of leads.
+        # Update the header file.
+        full_lines = full_header.split('\n')
         reduced_lines = list()
 
+        # For the first line, update the number of leads.
         entries = full_lines[0].split()
         entries[1] = str(num_reduced_leads)
         reduced_lines.append(' '.join(entries))
 
-        # For the next lines of the header file that describe the leads, extract the reduced leads.
+        # For the next lines, extract the lead metadata but reorder as needed.
         reduced_indices = list()
         for i in range(num_reduced_leads):
             j = full_leads.index(reduced_leads[i])
-            reduced_indices.append(j)
-            entries = full_lines[j+1].split()
-            reduced_lines.append(' '.join(entries))
+            reduced_lines.append(full_lines[j+1])
 
-        # For the remaining lines that describe the other data, copy the lines as-is.
+        # For the remaining lines, extract the rest of the data as-is.
         for j in range(num_full_leads+1, len(full_lines)):
-            entries = full_lines[j].split()
-            reduced_lines.append(' '.join(entries))
+            reduced_lines.append(full_lines[j])
 
-        # Save the reduced lead header and recording files.
+        # Save the reduced-lead header file.
+        head, tail = os.path.split(full_header_file)
+        reduced_header_file = os.path.join(args.output_directory, tail)
         with open(reduced_header_file, 'w') as f:
             f.write('\n'.join(reduced_lines))
 
-        reduced_recording = full_recording[reduced_indices, :]
-        d = {args.key: reduced_recording}
-        sp.io.savemat(reduced_recording_file, d, format='4')
+        # Load the full-lead recording file, extract the lead data, and save the reduced-lead recording file.
+        recording = load_recording(full_recording_file, full_header, reduced_leads, args.key)
+        d = {args.key: recording}
+
+        head, tail = os.path.split(full_recording_file)
+        reduced_recording_file = os.path.join(args.output_directory, tail)
+        savemat(reduced_recording_file, d, format='4')
 
 if __name__=='__main__':
     run(get_parser().parse_args(sys.argv[1:]))

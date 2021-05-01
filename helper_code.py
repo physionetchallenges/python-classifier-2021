@@ -6,21 +6,26 @@
 import numpy as np, os
 from scipy.io import loadmat
 
-# Define 12, 6, and 2 lead ECG sets.
-twelve_leads = ('I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6')
-six_leads = ('I', 'II', 'III', 'aVR', 'aVL', 'aVF')
-three_leads = ('I', 'II', 'V2')
-two_leads = ('II', 'V5')
+# Check if a variable is a number or represents a number.
+def is_number(x):
+    try:
+        float(x)
+        return True
+    except (ValueError, TypeError):
+        return False
 
 # Check if a variable is an integer or represents an integer.
 def is_integer(x):
-    try:
-        if int(x)==float(x):
-            return True
-        else:
-            return False
-    except (ValueError, TypeError):
+    if is_number(x):
+        return float(x).is_integer()
+    else:
         return False
+
+# (Re)sort leads using the standard order of leads for the standard twelve-lead ECG.
+def sort_leads(leads):
+    x = ('I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6')
+    leads = sorted(leads, key=lambda lead: (x.index(lead) if lead in x else len(x) + leads.index(lead)))
+    return tuple(leads)
 
 # Find header and recording files.
 def find_challenge_files(data_directory):
@@ -44,9 +49,35 @@ def load_header(header_file):
 
 # Load recording file as an array.
 def load_recording(recording_file, header=None, leads=None, key='val'):
-    x = loadmat(recording_file)[key]
-    recording = np.asarray(x, dtype=np.float32)
+    recording = loadmat(recording_file)[key]
+    if header and leads:
+        recording = choose_leads(recording, header, leads)
     return recording
+
+# Choose leads from the recording file.
+def choose_leads(recording, header, leads):
+    num_leads = len(leads)
+    num_samples = np.shape(recording)[1]
+    chosen_recording = np.zeros((num_leads, num_samples), recording.dtype)
+    available_leads = get_leads(header)
+    for i, lead in enumerate(leads):
+        if lead in available_leads:
+            j = available_leads.index(lead)
+            chosen_recording[i, :] = recording[j, :]
+    return chosen_recording
+
+# Get recording ID.
+def get_recording_id(header):
+    recording_id = None
+    for i, l in enumerate(header.split('\n')):
+        if i==0:
+            try:
+                recording_id = l.split(' ')[0]
+            except:
+                pass
+        else:
+            break
+    return recording_id
 
 # Get leads from header.
 def get_leads(header):
@@ -59,7 +90,7 @@ def get_leads(header):
             leads.append(entries[-1])
         else:
             break
-    return leads
+    return tuple(leads)
 
 # Get age from header.
 def get_age(header):
@@ -72,7 +103,7 @@ def get_age(header):
                 age = float('nan')
     return age
 
-# Get age from header.
+# Get sex from header.
 def get_sex(header):
     sex = None
     for l in header.split('\n'):
@@ -122,9 +153,9 @@ def get_num_samples(header):
             break
     return num_samples
 
-# Get ADC gains (ADC units per physical unit), floating-point number for ECG leads, from header.
-def get_adcgains(header, leads):
-    adc_gains = np.zeros(len(leads), dtype=np.float32)
+# Get analog-to-digital converter (ADC) gains from header.
+def get_adc_gains(header, leads):
+    adc_gains = np.zeros(len(leads))
     for i, l in enumerate(header.split('\n')):
         entries = l.split(' ')
         if i==0:
@@ -143,7 +174,7 @@ def get_adcgains(header, leads):
 
 # Get baselines from header.
 def get_baselines(header, leads):
-    baselines = np.zeros(len(leads), dtype=np.float32)
+    baselines = np.zeros(len(leads))
     for i, l in enumerate(header.split('\n')):
         entries = l.split(' ')
         if i==0:
@@ -165,20 +196,18 @@ def get_labels(header):
     labels = list()
     for l in header.split('\n'):
         if l.startswith('#Dx'):
-            entries = l.split(': ')[1].split(',')
-            for entry in entries:
-                labels.append(entry.strip())
+            try:
+                entries = l.split(': ')[1].split(',')
+                for entry in entries:
+                    labels.append(entry.strip())
+            except:
+                pass
     return labels
 
 # Save outputs from model.
-def save_outputs(output_file, classes, labels, probabilities):
-    # Extract the recording identifier from the filename.
-    head, tail = os.path.split(output_file)
-    root, extension = os.path.splitext(tail)
-    recording_identifier = root
-
+def save_outputs(output_file, recording_id, classes, labels, probabilities):
     # Format the model outputs.
-    recording_string = '#{}'.format(recording_identifier)
+    recording_string = '#{}'.format(recording_id)
     class_string = ','.join(str(c) for c in classes)
     label_string = ','.join(str(l) for l in labels)
     probabilities_string = ','.join(str(p) for p in probabilities)
@@ -187,3 +216,19 @@ def save_outputs(output_file, classes, labels, probabilities):
     # Save the model outputs.
     with open(output_file, 'w') as f:
         f.write(output_string)
+
+# Load outputs from model.
+def load_outputs(output_file):
+    with open(output_file, 'r') as f:
+        for i, l in enumerate(f):
+            if i==0:
+                recording_id = l[1:] if len(l)>1 else None
+            elif i==1:
+                classes = tuple(entry.strip() for entry in l.split(','))
+            elif i==2:
+                labels = tuple(entry.strip() for entry in l.split(','))
+            elif i==3:
+                probabilities = tuple(float(entry) if is_number_entry() else float('nan') for entry in l.split(','))
+            else:
+                break
+    return recording_id, classes, labels, probabilities

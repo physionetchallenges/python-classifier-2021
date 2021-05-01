@@ -1,21 +1,31 @@
 #!/usr/bin/env python
 
 # Edit this script to add your team's training code.
-# Some functions are *required*, but you can edit most parts of required functions, remove non-required functions, and add your own function.
+# Some functions are *required*, but you can edit most parts of the required functions, remove non-required functions, and add your own functions.
 
+################################################################################
+#
+# Imported functions and variables
+#
+################################################################################
+
+# Import functions. These functions are not required. You can change or remove them.
 from helper_code import *
 import numpy as np, os, sys, joblib
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
 
-twelve_lead_model_filename = '12_lead_model.sav'
-six_lead_model_filename = '6_lead_model.sav'
-three_lead_model_filename = '3_lead_model.sav'
-two_lead_model_filename = '2_lead_model.sav'
+# Define the Challenge lead sets. These variables are not required. You can change or remove them.
+twelve_leads = ('I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6')
+six_leads = ('I', 'II', 'III', 'aVR', 'aVL', 'aVF')
+four_leads = ('I', 'II', 'III', 'V2')
+three_leads = ('I', 'II', 'V2')
+two_leads = ('I', 'II')
+lead_sets = (twelve_leads, six_leads, four_leads, three_leads, two_leads)
 
 ################################################################################
 #
-# Training function
+# Training model function
 #
 ################################################################################
 
@@ -34,7 +44,7 @@ def training_code(data_directory, model_directory):
     if not os.path.isdir(model_directory):
         os.mkdir(model_directory)
 
-    # Extract classes from dataset.
+    # Extract the classes from the dataset.
     print('Extracting classes...')
 
     classes = set()
@@ -44,10 +54,10 @@ def training_code(data_directory, model_directory):
     if all(is_integer(x) for x in classes):
         classes = sorted(classes, key=lambda x: int(x)) # Sort classes numerically if numbers.
     else:
-        classes = sorted(classes) # Sort classes alphanumerically otherwise.
+        classes = sorted(classes) # Sort classes alphanumerically if not numbers.
     num_classes = len(classes)
 
-    # Extract features and labels from dataset.
+    # Extract the features and labels from the dataset.
     print('Extracting features and labels...')
 
     data = np.zeros((num_recordings, 14), dtype=np.float32) # 14 features: one feature for each lead, one feature for age, and one feature for sex
@@ -72,128 +82,34 @@ def training_code(data_directory, model_directory):
                 j = classes.index(label)
                 labels[i, j] = 1
 
-    # Train models.
+    # Train a model for each lead set.
+    for leads in lead_sets:
+        print('Training model for {}-lead set: {}...'.format(len(leads), ', '.join(leads)))
 
-    # Define parameters for random forest classifier.
-    n_estimators = 3     # Number of trees in the forest.
-    max_leaf_nodes = 100 # Maximum number of leaf nodes in each tree.
-    random_state = 0     # Random state; set for reproducibility.
+        # Define parameters for random forest classifier.
+        n_estimators = 3     # Number of trees in the forest.
+        max_leaf_nodes = 100 # Maximum number of leaf nodes in each tree.
+        random_state = 123   # Random state; set for reproducibility.
 
-    # Train 12-lead ECG model.
-    print('Training 12-lead ECG model...')
+        # Extract the features for the model.
+        feature_indices = [twelve_leads.index(lead) for lead in leads] + [12, 13]
+        features = data[:, feature_indices]
 
-    leads = twelve_leads
-    filename = os.path.join(model_directory, twelve_lead_model_filename)
+        # Train the model.
+        imputer = SimpleImputer().fit(features)
+        features = imputer.transform(features)
+        classifier = RandomForestClassifier(n_estimators=n_estimators, max_leaf_nodes=max_leaf_nodes, random_state=random_state).fit(features, labels)
 
-    feature_indices = [twelve_leads.index(lead) for lead in leads] + [12, 13]
-    features = data[:, feature_indices]
-
-    imputer = SimpleImputer().fit(features)
-    features = imputer.transform(features)
-    classifier = RandomForestClassifier(n_estimators=n_estimators, max_leaf_nodes=max_leaf_nodes, random_state=random_state).fit(features, labels)
-    save_model(filename, classes, leads, imputer, classifier)
-
-    # Train 6-lead ECG model.
-    print('Training 6-lead ECG model...')
-
-    leads = six_leads
-    filename = os.path.join(model_directory, six_lead_model_filename)
-
-    feature_indices = [twelve_leads.index(lead) for lead in leads] + [12, 13]
-    features = data[:, feature_indices]
-
-    imputer = SimpleImputer().fit(features)
-    features = imputer.transform(features)
-    classifier = RandomForestClassifier(n_estimators=n_estimators, max_leaf_nodes=max_leaf_nodes, random_state=random_state).fit(features, labels)
-    save_model(filename, classes, leads, imputer, classifier)
-
-    # Train 3-lead ECG model.
-    print('Training 3-lead ECG model...')
-
-    leads = three_leads
-    filename = os.path.join(model_directory, three_lead_model_filename)
-
-    feature_indices = [twelve_leads.index(lead) for lead in leads] + [12, 13]
-    features = data[:, feature_indices]
-
-    imputer = SimpleImputer().fit(features)
-    features = imputer.transform(features)
-    classifier = RandomForestClassifier(n_estimators=n_estimators, max_leaf_nodes=max_leaf_nodes, random_state=random_state).fit(features, labels)
-    save_model(filename, classes, leads, imputer, classifier)
-
-    # Train 2-lead ECG model.
-    print('Training 2-lead ECG model...')
-
-    leads = two_leads
-    filename = os.path.join(model_directory, two_lead_model_filename)
-
-    feature_indices = [twelve_leads.index(lead) for lead in leads] + [12, 13]
-    features = data[:, feature_indices]
-
-    imputer = SimpleImputer().fit(features)
-    features = imputer.transform(features)
-    classifier = RandomForestClassifier(n_estimators=n_estimators, max_leaf_nodes=max_leaf_nodes, random_state=random_state).fit(features, labels)
-    save_model(filename, classes, leads, imputer, classifier)
+        # Save the model.
+        save_model(model_directory, leads, classes, imputer, classifier)
 
 ################################################################################
 #
-# File I/O functions
+# Running trained model function
 #
 ################################################################################
 
-# Save your trained models.
-def save_model(filename, classes, leads, imputer, classifier):
-    # Construct a data structure for the model and save it.
-    d = {'classes': classes, 'leads': leads, 'imputer': imputer, 'classifier': classifier}
-    joblib.dump(d, filename, protocol=0)
-
-# Load your trained 12-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
-def load_twelve_lead_model(model_directory):
-    filename = os.path.join(model_directory, twelve_lead_model_filename)
-    return load_model(filename)
-
-# Load your trained 6-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
-def load_six_lead_model(model_directory):
-    filename = os.path.join(model_directory, six_lead_model_filename)
-    return load_model(filename)
-
-# Load your trained 3-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
-def load_three_lead_model(model_directory):
-    filename = os.path.join(model_directory, three_lead_model_filename)
-    return load_model(filename)
-
-# Load your trained 2-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
-def load_two_lead_model(model_directory):
-    filename = os.path.join(model_directory, two_lead_model_filename)
-    return load_model(filename)
-
-# Generic function for loading a model.
-def load_model(filename):
-    return joblib.load(filename)
-
-################################################################################
-#
-# Running trained model functions
-#
-################################################################################
-
-# Run your trained 12-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
-def run_twelve_lead_model(model, header, recording):
-    return run_model(model, header, recording)
-
-# Run your trained 6-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
-def run_six_lead_model(model, header, recording):
-    return run_model(model, header, recording)
-
-# Run your trained 3-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
-def run_three_lead_model(model, header, recording):
-    return run_model(model, header, recording)
-
-# Run your trained 2-lead ECG model. This function is *required*. Do *not* change the arguments of this function.
-def run_two_lead_model(model, header, recording):
-    return run_model(model, header, recording)
-
-# Generic function for running a trained model.
+# Run your trained model. This function is *required*. Do *not* change the arguments of this function.
 def run_model(model, header, recording):
     classes = model['classes']
     leads = model['leads']
@@ -202,7 +118,7 @@ def run_model(model, header, recording):
 
     # Load features.
     num_leads = len(leads)
-    data = np.zeros(num_leads+2, dtype=np.float32)
+    data = np.zeros(num_leads+2)
     age, sex, rms = get_features(header, recording, leads)
     data[0:num_leads] = rms
     data[num_leads] = age
@@ -223,11 +139,32 @@ def run_model(model, header, recording):
 
 ################################################################################
 #
-# Other functions
+# File I/O functions
 #
 ################################################################################
 
-# Extract features from the header and recording.
+# Save a trained model. This function is not required. You can change or remove it.
+def save_model(model_directory, leads, classes, imputer, classifier):
+    d = {'leads': leads, 'classes': classes, 'imputer': imputer, 'classifier': classifier}
+    filename = os.path.join(model_directory, get_model_filename(leads))
+    joblib.dump(d, filename, protocol=0)
+
+# Load a trained model. This function is *required*. Do *not* change the arguments of this function.
+def load_model(model_directory, leads):
+    filename = os.path.join(model_directory, get_model_filename(leads))
+    return joblib.load(filename)
+
+# Define the filename(s) for the trained models. This function is not required. You can change or remove it.
+def get_model_filename(leads):
+    return 'model_' + '-'.join(sort_leads(leads)) + '.sav'
+
+################################################################################
+#
+# Feature extraction function
+#
+################################################################################
+
+# Extract features from the header and recording. This function is not required. You can change or remove it.
 def get_features(header, recording, leads):
     # Extract age.
     age = get_age(header)
@@ -244,22 +181,17 @@ def get_features(header, recording, leads):
         sex = float('nan')
 
     # Reorder/reselect leads in recordings.
-    available_leads = get_leads(header)
-    indices = list()
-    for lead in leads:
-        i = available_leads.index(lead)
-        indices.append(i)
-    recording = recording[indices, :]
+    recording = choose_leads(recording, header, leads)
 
     # Pre-process recordings.
-    adc_gains = get_adcgains(header, leads)
+    adc_gains = get_adc_gains(header, leads)
     baselines = get_baselines(header, leads)
     num_leads = len(leads)
     for i in range(num_leads):
         recording[i, :] = (recording[i, :] - baselines[i]) / adc_gains[i]
 
     # Compute the root mean square of each ECG lead signal.
-    rms = np.zeros(num_leads, dtype=np.float32)
+    rms = np.zeros(num_leads)
     for i in range(num_leads):
         x = recording[i, :]
         rms[i] = np.sqrt(np.sum(x**2) / np.size(x))

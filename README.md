@@ -2,9 +2,11 @@
 
 ## What's in this repository?
 
-We implemented a random forest classifier that uses age, sex, and the root mean square of the ECG lead signals as features. This simple example illustrates how to format your Python entry for the Challenge, and it should finish running on any of the Challenge training datasets in a minute or two on a personal computer. However, it is **not** designed to score well (or, more accurately, it is designed not to score well), so you should not use it as a baseline for your model's performance.
+This repository contains a simple example to illustrate how to format your Python entry for the Challenge. You can try it by running the following commands on any of the Challenge training sets. These commands should take a few minutes from start to finish on any recent personal computer.
 
-This code uses four main scripts, as described below, to train and test your model for the 2021 Challenge.
+For this example, we implemented a random forest classifier that uses age, sex, and the root mean square of the ECG lead signals as features. You can use a different classifier, features, and software for your entry. This example is designed **not** not to score well, so you should **not** use it as a baseline for your model's performance.
+
+This code uses four main scripts, described below, to train and test your model for the 2021 Challenge.
 
 ## How do I run these scripts?
 
@@ -34,29 +36,30 @@ Please edit the following script to add your training and testing code:
 
 * `team_code.py` is a script with functions for training your model and running your trained models.
 
-Please do **not** edit the following scripts. We will use the unedited versions of these scripts.
+Please do **not** edit the following scripts. We will use the unedited versions of these scripts when running your code:
 
 * `train_model.py` is a script for calling your training code on the training data.
 * `test_model.py` is a script for calling your trained models on the test data.
-* `helper_code.py` is a script with helper variables and functions that we used for our code. You are welcome to use them in your code.
+* `helper_code.py` is a script with helper functions that we used for our code. You are welcome to use them in your code.
 
 These four scripts must remain in the root path of your repository, but you can put other scripts and other files elsewhere in your repository.
 
 ## How do I train, save, load, and run my model?
 
-To train and save your models, please edit the `training_code` function in the `team_code.py` script. Please do not edit the input arguments or output arguments of the `training_code` function.
+To train and save your models, please edit the `training_code` function in the `team_code.py` script. Please do not edit the input or output arguments of the `training_code` function.
 
-To load and run your trained model, please edit the `load_twelve_lead_model`, `load_six_lead_model`, `load_three_lead_model`, and `load_two_lead_model` functions as well as the `run_twelve_lead_model`, `run_six_lead_model`, `run_three_lead_model` and `run_two_lead_model` functions in the `team_code.py` script, which takes an ECG recording as an input and returns the class labels and probabilities for the ECG recording as outputs. Please do not edit the input or output arguments of the functions for loading or running your models.
+To load and run your trained model, please edit the `load_model` and `run_model` functions in the `team_code.py` script. Please do not edit the input or output arguments of the functions of the `load_model` and `run_model` functions.
 
 ## What else is in this repository?
 
 This README has instructions for running the example code and writing and running your own code.
 
-We also included a script, `extract_leads_wfdb.py`, for extracting reduced-lead sets from the training data. You can use this script to produce reduced-lead data that you can use with your code. You can run this script using the following commands:
+We also included a script, `extract_leads_wfdb.py`, for extracting reduced-lead sets from the training data. You can use this script to create reduced-lead data that you can use with your code. You can run this script using the following commands:
 
-    python extract_leads_wfdb.py -i twelve_lead_directory -o two_lead_directory -l II V5 
-    python extract_leads_wfdb.py -i twelve_lead_directory -o three_lead_directory -l I II V2 
     python extract_leads_wfdb.py -i twelve_lead_directory -o six_lead_directory -l I II III aVL aVR aVF 
+    python extract_leads_wfdb.py -i twelve_lead_directory -o four_lead_directory -l I II III V2
+    python extract_leads_wfdb.py -i twelve_lead_directory -o three_lead_directory -l I II V2 
+    python extract_leads_wfdb.py -i twelve_lead_directory -o two_lead_directory -l I II
 
 Here, the `-i` argument gives the input folder, the `-o` argument gives the output folder, and the `-l` argument gives the leads.
 
@@ -126,5 +129,5 @@ Please see the [PhysioNet/CinC Challenge 2021 webpage](https://physionetchalleng
 * [The PhysioNet/CinC Challenge 2021 webpage](https://physionetchallenges.org/2021/)
 * [MATLAB example code for the PhysioNet/CinC Challenge 2021](https://github.com/physionetchallenges/matlab-classifier-2021)
 * [Evaluation code for the PhysioNet/CinC Challenge 2021](https://github.com/physionetchallenges/evaluation-2021) 
-* [2021 Challenge Frequently Asked Questions (FAQ)](https://physionetchallenges.org/2021/faq/) 
-* [Frequently Asked Questions (FAQ)](https://physionetchallenges.org/faq/) 
+* [2021 frequently asked questions (FAQ)](https://physionetchallenges.org/2021/faq/) 
+* [General frequently asked questions (FAQ)](https://physionetchallenges.org/faq/) 

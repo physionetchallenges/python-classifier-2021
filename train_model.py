@@ -12,10 +12,6 @@ if __name__ == '__main__':
 
     data_directory = sys.argv[1]
     model_directory = sys.argv[2]
-
-    # Run the training code.
-    print('Running training code...')
-
-    training_code(data_directory, model_directory)
+    training_code(data_directory, model_directory) ### Implement this function!
 
     print('Done.')
