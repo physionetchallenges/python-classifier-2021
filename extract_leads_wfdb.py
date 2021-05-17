@@ -2,7 +2,7 @@
 
 # Load libraries.
 import os, sys, argparse
-from scipy.io import loadmat, savemat
+from scipy.io import savemat
 from helper_code import find_challenge_files, load_header, load_recording, get_leads
 
 # Parse arguments.
