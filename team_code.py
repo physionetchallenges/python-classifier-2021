@@ -29,7 +29,7 @@ lead_sets = (twelve_leads, six_leads, four_leads, three_leads, two_leads)
 #
 ################################################################################
 
-# Train your model. This function is *required*. Do *not* change the arguments of this function.
+# Train your model. This function is *required*. You should edit this function to add your code, but do *not* change the arguments of this function.
 def training_code(data_directory, model_directory):
     # Find header and recording files.
     print('Finding header and recording files...')
@@ -109,7 +109,7 @@ def training_code(data_directory, model_directory):
 #
 ################################################################################
 
-# Run your trained model. This function is *required*. Do *not* change the arguments of this function.
+# Run your trained model. This function is *required*. You should edit this function to add your code, but do *not* change the arguments of this function.
 def run_model(model, header, recording):
     classes = model['classes']
     leads = model['leads']
@@ -149,14 +149,15 @@ def save_model(model_directory, leads, classes, imputer, classifier):
     filename = os.path.join(model_directory, get_model_filename(leads))
     joblib.dump(d, filename, protocol=0)
 
-# Load a trained model. This function is *required*. Do *not* change the arguments of this function.
+# Load a trained model. This function is *required*. You should edit this function to add your code, but do *not* change the arguments of this function.
 def load_model(model_directory, leads):
     filename = os.path.join(model_directory, get_model_filename(leads))
     return joblib.load(filename)
 
 # Define the filename(s) for the trained models. This function is not required. You can change or remove it.
 def get_model_filename(leads):
-    return 'model_' + '-'.join(sort_leads(leads)) + '.sav'
+    sorted_leads = sort_leads(leads)
+    return 'model_' + '-'.join(sorted_leads) + '.sav'
 
 ################################################################################
 #

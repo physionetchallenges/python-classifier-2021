@@ -26,7 +26,8 @@ def test_model(model_directory, data_directory, output_directory):
     for i in range(num_recordings):
         header = load_header(header_files[i])
         leads = get_leads(header)
-        required_lead_sets.add(sort_leads(leads))
+        sorted_leads = sort_leads(leads)
+        required_lead_sets.add(sorted_leads)
 
     # Load models.
     leads_to_model = dict()
@@ -45,9 +46,10 @@ def test_model(model_directory, data_directory, output_directory):
         header = load_header(header_files[i])
         recording = load_recording(recording_files[i])
         leads = get_leads(header)
+        sorted_leads = sort_leads(leads)
 
         # Apply model to recording.
-        model = leads_to_model[leads]
+        model = leads_to_model[sorted_leads]
         classes, labels, probabilities = run_model(model, header, recording) ### Implement this function!
 
         # Save model outputs.
