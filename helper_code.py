@@ -121,13 +121,13 @@ def get_sex(header):
                 pass
     return sex
 
-# Get frequency from header.
+# Get number of leads from header.
 def get_num_leads(header):
     num_leads = None
     for i, l in enumerate(header.split('\n')):
         if i==0:
             try:
-                num_samples = float(l.split(' ')[1])
+                num_leads = float(l.split(' ')[1])
             except:
                 pass
         else:
