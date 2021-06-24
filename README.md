@@ -56,7 +56,7 @@ This README has instructions for running the example code and writing and runnin
 
 We also included a script, `extract_leads_wfdb.py`, for extracting reduced-lead sets from the training data. You can use this script to create reduced-lead data that you can use with your code. You can run this script using the following commands:
 
-    python extract_leads_wfdb.py -i twelve_lead_directory -o six_lead_directory -l I II III aVL aVR aVF 
+    python extract_leads_wfdb.py -i twelve_lead_directory -o six_lead_directory -l I II III aVR aVL aVF 
     python extract_leads_wfdb.py -i twelve_lead_directory -o four_lead_directory -l I II III V2
     python extract_leads_wfdb.py -i twelve_lead_directory -o three_lead_directory -l I II V2 
     python extract_leads_wfdb.py -i twelve_lead_directory -o two_lead_directory -l I II
