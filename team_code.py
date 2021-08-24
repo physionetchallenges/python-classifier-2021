@@ -61,7 +61,7 @@ def training_code(data_directory, model_directory):
     print('Extracting features and labels...')
 
     data = np.zeros((num_recordings, 14), dtype=np.float32) # 14 features: one feature for each lead, one feature for age, and one feature for sex
-    labels = np.zeros((num_recordings, num_classes), dtype=np.bool) # One-hot encoding of classes
+    labels = np.zeros((num_recordings, num_classes), dtype=np.bool_) # One-hot encoding of classes
 
     for i in range(num_recordings):
         print('    {}/{}...'.format(i+1, num_recordings))
