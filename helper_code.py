@@ -37,7 +37,7 @@ def sort_leads(leads):
 def find_challenge_files(data_directory):
     header_files = list()
     recording_files = list()
-    for f in os.listdir(data_directory):
+    for f in sorted(os.listdir(data_directory)):
         root, extension = os.path.splitext(f)
         if not root.startswith('.') and extension=='.hea':
             header_file = os.path.join(data_directory, root + '.hea')

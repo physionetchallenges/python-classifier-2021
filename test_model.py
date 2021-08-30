@@ -50,7 +50,11 @@ def test_model(model_directory, data_directory, output_directory):
 
         # Apply model to recording.
         model = leads_to_model[sorted_leads]
-        classes, labels, probabilities = run_model(model, header, recording) ### Implement this function!
+        try:
+            classes, labels, probabilities = run_model(model, header, recording) ### Implement this function!
+        except:
+            print('... failed.')
+            classes, labels, probabilities = list(), list(), list()
 
         # Save model outputs.
         recording_id = get_recording_id(header)
